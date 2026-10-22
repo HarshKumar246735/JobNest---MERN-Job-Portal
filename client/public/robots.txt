@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /candidate
+Disallow: /recruiter
+# Replace with your deployed API URL (it serves /sitemap.xml)
+Sitemap: https://YOUR-API.onrender.com/sitemap.xml

@@ -1,0 +1,13 @@
+const r = require('express').Router();
+const c = require('../controllers/publicController');
+const v = require('../validators/jobs');
+const validate = require('../middleware/validate');
+r.get('/jobs', v.list, validate, c.listJobs);
+r.get('/jobs/featured', c.featured);
+r.get('/jobs/suggestions', c.suggestions);
+r.get('/jobs/:id', c.getJob);
+r.get('/categories', c.categories);
+r.get('/stats', c.homeStats);
+r.get('/companies', c.listCompanies);
+r.get('/companies/:id', c.getCompany);
+module.exports = r;

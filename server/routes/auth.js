@@ -1,0 +1,12 @@
+const r = require('express').Router();
+const c = require('../controllers/authController');
+const v = require('../validators/auth');
+const validate = require('../middleware/validate');
+const { protect } = require('../middleware/auth');
+r.post('/register', v.register, validate, c.register);
+r.post('/login', v.login, validate, c.login);
+r.post('/logout', c.logout);
+r.get('/me', protect, c.me);
+r.post('/forgot-password', v.forgot, validate, c.forgotPassword);
+r.post('/reset-password', v.reset, validate, c.resetPassword);
+module.exports = r;

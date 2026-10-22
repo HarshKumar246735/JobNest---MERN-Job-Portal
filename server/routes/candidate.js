@@ -1,0 +1,22 @@
+const express = require('express');
+const { body } = require('express-validator');
+const validate = require('../middleware/validate');
+const { protect, authorize } = require('../middleware/auth');
+const cand = require('../controllers/candidateController'), appc = require('../controllers/applicationController');
+const rs = require('../controllers/resumeController'), sv = require('../controllers/savedController'), nt = require('../controllers/notificationController');
+const { recommend } = require('../services/recommend'); const { asyncHandler } = require('../utils/helpers');
+const r = express.Router();
+const P = [protect];
+const C = [protect, authorize('candidate')];
+// Notifications: any authenticated role
+r.get('/notifications', P, nt.list); r.patch('/notifications/read-all', P, nt.readAll); r.patch('/notifications/:id/read', P, nt.read); r.delete('/notifications/:id', P, nt.remove);
+r.get('/candidate/dashboard', C, cand.dashboard); r.patch('/candidate/profile', C, cand.updateProfile); r.patch('/candidate/password', C, cand.changePassword);
+r.get('/jobs/recommended', C, asyncHandler(async (req, res) => res.json({ success: true, jobs: await recommend(req.user, 20) })));
+r.post('/applications', C, [body('jobId').isMongoId(), body('resumeId').isMongoId(), body('coverLetter').optional().isString()], validate, appc.apply);
+r.get('/applications/my-applications', C, appc.mine); r.get('/applications/:id', C, appc.getOne); r.patch('/applications/:id/withdraw', C, appc.withdraw);
+r.post('/resumes/upload', C, (q, s, n) => rs.upload(q, s, (e) => (e ? n(Object.assign(e, { status: 400, message: e.code === 'LIMIT_FILE_SIZE' ? 'File must be 5MB or smaller' : e.message })) : n())), rs.uploadResume);
+r.post('/resumes', C, rs.createBuilt);
+r.get('/resumes', C, rs.list); r.get('/resumes/:id', C, rs.getOne); r.patch('/resumes/:id', C, rs.update); r.delete('/resumes/:id', C, rs.remove);
+r.post('/saved-jobs/:jobId', C, sv.save); r.delete('/saved-jobs/:jobId', C, sv.unsave); r.get('/saved-jobs', C, sv.list);
+r.get('/alerts', C, sv.alerts); r.post('/alerts', C, sv.createAlert); r.patch('/alerts/:id', C, sv.updateAlert); r.delete('/alerts/:id', C, sv.deleteAlert);
+module.exports = r;

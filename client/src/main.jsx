@@ -1,0 +1,10 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import router from './App';
+import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import { SavedProvider } from './context/SavedContext';
+import { SocketProvider } from './context/SocketContext';
+import './css/base.css'; import './css/navbar.css'; import './css/home.css'; import './css/jobs.css'; import './css/auth.css'; import './css/dashboard.css';
+ReactDOM.createRoot(document.getElementById('root')).render(<React.StrictMode><ToastProvider><AuthProvider><SocketProvider><SavedProvider><RouterProvider router={router} /></SavedProvider></SocketProvider></AuthProvider></ToastProvider></React.StrictMode>);

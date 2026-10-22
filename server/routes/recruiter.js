@@ -1,0 +1,14 @@
+const r = require('express').Router();
+const { protect, authorize } = require('../middleware/auth'); const validate = require('../middleware/validate'); const jobRules = require('../validators/job');
+const rc = require('../controllers/recruiterController'), ic = require('../controllers/interviewController');
+const R = [protect, authorize('recruiter')], B = [protect, authorize('candidate', 'recruiter')];
+const logo = (q, s, n) => rc.logoUpload(q, s, (e) => (e ? n(Object.assign(e, { status: 400, message: e.code === 'LIMIT_FILE_SIZE' ? 'Logo must be 1MB or smaller' : e.message })) : n()));
+r.get('/recruiter/dashboard', R, rc.dashboard); r.get('/recruiter/company', R, rc.getMyCompany); r.post('/companies', R, rc.createCompany); r.patch('/companies/:id', R, rc.updateCompany);
+r.post('/companies/:id/logo', R, logo, rc.uploadLogo); r.post('/recruiter/company/verification-request', R, rc.requestVerification);
+r.get('/recruiter/jobs', R, rc.myJobs); r.get('/recruiter/jobs/:id', R, rc.getMyJob);
+r.post('/jobs', R, jobRules(false), validate, rc.createJob); r.patch('/jobs/:id', R, jobRules(true), validate, rc.updateJob);
+r.patch('/jobs/:id/status', R, rc.setStatus); r.post('/jobs/:id/duplicate', R, rc.duplicateJob); r.delete('/jobs/:id', R, rc.removeJob);
+r.get('/recruiter/applications/export.csv', R, rc.exportCsv); r.get('/recruiter/applications', R, rc.applications); r.get('/recruiter/applications/:id', R, rc.getApplication);
+r.patch('/recruiter/applications/:id/status', R, rc.setAppStatus); r.post('/recruiter/applications/:id/notes', R, rc.addNote);
+r.post('/interviews', R, ic.create); r.get('/interviews/my-interviews', B, ic.mine); r.patch('/interviews/:id', R, ic.update); r.delete('/interviews/:id', R, ic.cancel);
+module.exports = r;
