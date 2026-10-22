@@ -1,70 +1,247 @@
 # JobNest - MERN Job Portal
+<img width="1630" height="920" alt="image" src="https://github.com/user-attachments/assets/ab4f8ade-7de7-4068-82c2-7c070e59f63b" />
 
-Job seekers, recruiters and administrators on one platform: search and filter jobs, apply, track applications, build resumes, post jobs, review candidates, schedule interviews, and moderate the platform.
 
-> **Status honesty:** all code was written without access to a database or the npm registry, so it has been syntax-checked (`node --check`, esbuild) and its imports verified, but **never run end-to-end**. Run the steps below and the smoke test, then fix anything that surfaces. See "Known limitations".
+JobNest is a full-stack job portal where job seekers can find jobs, apply for positions, build resumes, and track applications. Recruiters can post jobs and manage candidates, while administrators manage and monitor the platform.
 
-## Stack
-React 18 + Vite, React Router, Axios, Context API, Lucide, Recharts, plain CSS (`client/src/css`) | Node, Express 4, MongoDB + Mongoose, JWT (httpOnly cookie, Bearer fallback), bcryptjs, Multer, Socket.IO, express-validator, Helmet, express-rate-limit.
+## Features
 
-## Structure
-```
+### Job Seekers
+
+* Register and log in securely.
+* Search, filter, and explore job listings.
+* Apply for jobs and track application status.
+* Save jobs and receive notifications.
+* Build resumes using multiple templates.
+* Upload resumes and manage profiles.
+* View recommended jobs.
+
+### Recruiters
+
+* Create and manage job listings.
+* View applicants and review candidates.
+* Track recruitment pipelines.
+* Add candidate notes.
+* Schedule interviews.
+* Export recruitment data to CSV.
+
+### Administrators
+
+* Manage users, jobs, and companies.
+* Manage job categories and skills.
+* View reports and dashboard statistics.
+* Review audit logs and moderate the platform.
+
+### Additional Features
+
+* Real-time notifications using Socket.IO.
+* Responsive user interface.
+* Secure authentication using JWT.
+* Role-based access control.
+* Job search with filtering and pagination.
+* SEO-friendly job listings and sitemap.
+
+## Technology Stack
+
+**Frontend**
+
+* React 18
+* Vite
+* React Router
+* Axios
+* Context API
+* Recharts
+* Lucide React
+* CSS
+
+**Backend**
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT Authentication
+* Socket.IO
+* Multer
+* Express Validator
+* Helmet
+
+## Project Structure
+
+```text
 JobNest/
-├── client/   React app (src/pages, components, layouts, context, hooks, services, utils, css)
-├── server/   Express API (config, controllers, middleware, models, routes, services, validators, sockets, scripts)
-├── .env.example  README.md  package.json
+├── client/          # React frontend
+├── server/          # Express backend
+├── .env.example     # Environment variables template
+├── package.json     # Project scripts
+└── README.md
 ```
 
-## Prerequisites
-Node 18+, a MongoDB database (local `mongodb://127.0.0.1:27017/jobnest` or a free MongoDB Atlas cluster).
+## Requirements
 
-## Setup
+Install the following before running the project:
+
+* Node.js 18 or newer
+* npm
+* MongoDB local installation or MongoDB Atlas account
+
+## Installation and Setup
+
+### 1. Configure Environment Variables
+
+Create a root `.env` file by copying `.env.example`.
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Configure the required variables, including:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_long_random_secret
+CLIENT_URL=http://localhost:5173
+```
+
+Generate a strong, unique JWT secret and never commit your `.env` file to GitHub.
+
+### 2. Configure the Frontend
+
+```powershell
+Copy-Item client/.env.example client/.env
+```
+
+Set the API URL in `client/.env`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### 3. Install Dependencies
+
+From the project root, run:
+
 ```bash
-cp .env.example .env                 # root .env is read by the server; set MONGODB_URI and a long random JWT_SECRET
-cp client/.env.example client/.env   # VITE_API_URL=http://localhost:5000/api
 npm run install:all
-npm run seed                         # 15 categories, 32 demo companies, 300 jobs, demo accounts + sample activity
-npm run server                       # API on :5000   (terminal 1)
-npm run client                       # app on :5173   (terminal 2)
-npm run test:smoke                   # with the API running; exercises auth, RBAC, apply flow, uploads, interviews
 ```
-`npm run seed` is repeatable (upserts, no duplicates) and refuses to run when `NODE_ENV=production`.
-Create a real admin with `ADMIN_EMAIL` / `ADMIN_PASSWORD` (12+ chars) in `.env` then `npm run seed:admin`. Users can never self-register as admin.
 
-## Demo accounts (development only, created by `npm run seed`)
-| Role | Email | Password |
-|---|---|---|
-| Job seeker | candidate@jobnest.demo | Candidate@123 |
-| Recruiter | recruiter@jobnest.demo | Recruiter@123 |
-| Admin | admin@jobnest.demo | Admin@12345 |
+### 4. Seed the Database
 
-Never use these in production. The 32 demo companies are fictional, unverified and use initials logos. Jobs are marked `isDemo` and described as sample listings.
+```bash
+npm run seed
+```
 
-## Environment variables
-See `.env.example`. Required: `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL` (comma-separated allowed origins). Optional: `SERVER_URL` (public API URL, used for logo URLs), `ADMIN_EMAIL`, `ADMIN_PASSWORD`. Cloudinary and SMTP variables are listed but **not used by the code yet**: files are stored on local disk and no email is sent (notifications are in-app only; password-reset tokens are printed to the server console outside production).
+This command creates sample job categories, companies, job listings, demo accounts, and sample activity.
 
-## Production build
-`npm run build` (client, outputs `client/dist`). `npm start` runs the API.
+### 5. Start the Backend
+
+Open a terminal:
+
+```bash
+npm run server
+```
+
+The backend should run at:
+
+`http://localhost:5000`
+
+### 6. Start the Frontend
+
+Open another terminal:
+
+```bash
+npm run client
+```
+
+Open the application at:
+
+`http://localhost:5173`
+
+### 7. Run the Smoke Test
+
+With the backend running, open another terminal and execute:
+
+```bash
+npm run test:smoke
+```
+
+This test checks important API functionality, including authentication, job listings, access control, applications, resumes, and interviews.
+
+**Note:** The smoke test may require the database to be seeded and the demo accounts to exist. Resolve any reported failures before considering the application fully tested.
+
+## Demo Accounts
+
+These accounts are intended for local development only.
+
+| Role       | Email                                                   | Password      |
+| ---------- | ------------------------------------------------------- | ------------- |
+| Job Seeker | [candidate@jobnest.demo](mailto:candidate@jobnest.demo) | Candidate@123 |
+| Recruiter  | [recruiter@jobnest.demo](mailto:recruiter@jobnest.demo) | Recruiter@123 |
+| Admin      | [admin@jobnest.demo](mailto:admin@jobnest.demo)         | Admin@12345   |
+
+Never use these demo credentials in production.
+
+## Production Build
+
+To build the frontend:
+
+```bash
+npm run build
+```
+
+The generated frontend files will be available in `client/dist`.
+
+To start the backend:
+
+```bash
+npm start
+```
 
 ## Deployment
-**Backend on Render:** new Web Service, root directory `server`, build `npm install`, start `npm start`. Set `NODE_ENV=production`, `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL=https://your-app.vercel.app`, `SERVER_URL=https://your-api.onrender.com`. Allow Render's IPs in MongoDB Atlas network access. Seed once from your machine against the Atlas URI with `ALLOW_PROD_SEED=true` only if you want demo data.
-**Frontend on Vercel:** root directory `client`, framework Vite, env `VITE_API_URL=https://your-api.onrender.com/api`. `client/vercel.json` rewrites all routes to `index.html` so refreshes and deep links work. Update `client/public/robots.txt` with your API URL (the API serves `/sitemap.xml`).
-Cross-site cookies: the API sets `SameSite=None; Secure` in production. Browsers that block third-party cookies (e.g. Safari) may break sessions when frontend and API are on different domains; serving both under one parent domain avoids this.
 
-## Authorization model
-Every protected endpoint checks the JWT and role on the server (`middleware/auth.js`); frontend route guards are only a convenience. Recruiters can only touch jobs/applications/interviews they own; candidates only their own data; `/api/admin/*` requires the admin role and sensitive actions are written to the audit log. Candidates can only withdraw applications; recruiters follow the transition table in `services/applicationFlow.js`.
+### Backend — Render
 
-## Feature status
-Implemented in source (not yet executed end-to-end): auth + password reset, public job search with server-side filters/sort/pagination/suggestions, company and category pages, candidate dashboard/profile/applications/saved jobs/alerts/recommendations/notifications, resume upload (content-sniffed PDF/DOCX) and builder (3 templates, live preview, reorder, print-to-PDF), apply workflow with duplicate prevention, recruiter dashboard/company/jobs/pipeline/notes/interviews/CSV, admin dashboard/users/jobs/companies/categories/skills/reports/audit log, Socket.IO notifications with authenticated rooms, saved-job deadline reminders, sitemap, JobPosting structured data, responsive CSS.
+1. Create a new Web Service.
+2. Set the root directory to `server`.
+3. Set the build command to `npm install`.
+4. Set the start command to `npm start`.
+5. Configure the required environment variables.
+6. Configure MongoDB Atlas network access.
 
-## Known limitations
-- Never run end-to-end by the author; expect to fix small bugs. `npm run test:smoke` covers the main API paths but not the UI, mobile layout, or Socket.IO.
-- No automated unit/UI tests; no mobile/browser testing was done.
-- Local-disk uploads (resumes, logos) are lost on Render free-tier redeploys. Add persistent storage or Cloudinary before real use.
-- No email sending; no Cloudinary integration; no profile photo upload; no public profile page; privacy toggles only control what recruiters see.
-- Admin "Settings" is informational (no editable platform settings); no admin pre-approval queue (jobs publish immediately, admins can flag/remove).
-- Builder resumes cannot be downloaded by recruiters from the candidate page; PDF export uses the browser print dialog.
-- Homepage omits career-advice, testimonials, newsletter and resume-promo sections (no fabricated content, no newsletter backend). Contact page shows a placeholder email, and Privacy/Terms are templates needing legal review.
-- Company logos are initials-based; no third-party logo API is used.
-- Seeded jobs are 5 roles x 4 seniority levels per category (300 total) with varied company, city, salary, skills and descriptions, but titles are formulaic.
-- Recommendations are a transparent heuristic score, not a validated model.
+### Frontend — Vercel
+
+1. Import the project into Vercel.
+2. Set the root directory to `client`.
+3. Select Vite as the framework.
+4. Add the `VITE_API_URL` environment variable with your deployed backend API URL.
+5. Deploy the frontend.
+
+After deployment, update `CLIENT_URL` on the backend to match your frontend's actual origin.
+
+## Current Limitations
+
+* The project requires testing in a real environment before production use.
+* Resume and logo files are stored locally and may be lost when the hosting service redeploys.
+* Email delivery and Cloudinary integration are not implemented.
+* Some settings and legal pages are placeholders.
+* Resume PDF export uses the browser's print functionality.
+* Job recommendations use a basic scoring system rather than a machine-learning model.
+* UI, mobile responsiveness, and Socket.IO behavior require separate testing.
+
+## Future Improvements
+
+* Cloud storage for resumes and company logos.
+* Email verification and password-reset emails.
+* Automated unit and integration tests.
+* Improved job recommendations.
+* Public recruiter and company profiles.
+* Enhanced mobile experience.
+* Advanced analytics and recruitment reports.
+
+## Project Goal
+
+JobNest is designed as a practical MERN stack project to demonstrate frontend development, backend API design, database management, authentication, authorization, real-time communication, and deployment.
+
+**Status:** Development project. Verify all features through testing before using it in production.
